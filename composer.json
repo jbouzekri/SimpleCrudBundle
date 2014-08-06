@@ -1,0 +1,16 @@
+{
+    "name": "jbouzekri/simple-crud-bundle",
+    "type": "symfony-bundle",
+    "description": "Provide simple CRUD administration interface generation",
+    "keywords": ["Bundle", "Twig", "Symfony", "CMS", "SimpleIHM"],
+    "homepage": "https://github.com/jbouzekri/SimpleCrudBundle",
+    "license": "MIT",
+    "require": {
+        "gedmo/doctrine-extensions": ">=2.3",
+        "symfony/framework-bundle": ">=2.3"
+    },
+    "autoload": {
+        "psr-0": { "Jb\\Bundle\\SimpleCrudBundle": "" }
+    },
+    "target-dir": "Jb/Bundle/SimpleCrudBundle"
+}

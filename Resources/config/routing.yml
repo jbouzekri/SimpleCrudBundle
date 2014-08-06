@@ -1,0 +1,3 @@
+JbSimpleCrudBundle_Crud:
+    resource: .
+    type: jb_simple_crud

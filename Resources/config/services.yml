@@ -1,0 +1,16 @@
+parameters:
+    jb_simple_crud.routing_loader.class: Jb\Bundle\SimpleCrudBundle\Routing\CrudLoader
+    jb_simple_crud.controller.class: Jb\Bundle\SimpleCrudBundle\Controller\CrudController
+
+services:
+    jb_simple_crud.routing_loader:
+        class: %jb_simple_crud.routing_loader.class%
+        arguments:
+            - %jb_simple_crud.pages%
+        tags:
+            - { name: routing.loader }
+
+    jb_simple_crud.controller:
+        class: %jb_simple_crud.controller.class%
+        arguments:
+            - @doctrine
