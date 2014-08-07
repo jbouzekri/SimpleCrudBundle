@@ -41,6 +41,7 @@ class CrudEntityConfiguration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->append($this->addTemplatesNode())
+                ->append($this->addColumnsNode())
             ->end();
 
         return $treeBuilder;
@@ -63,6 +64,25 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->scalarNode('layout')->defaultValue('JbSimpleCrudBundle::layout.html.twig')->end()
                 ->scalarNode('index')->defaultValue('JbSimpleCrudBundle:Crud:index.html.twig')->end()
             ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Add columns tree node
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addColumnsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('columns');
+
+        $node
+            ->prototype('scalar')
+            ->end()
+            ->defaultValue(array('id'))
         ;
 
         return $node;

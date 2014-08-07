@@ -62,4 +62,14 @@ class CrudMetadata
     {
         return $this->config['templates'];
     }
+
+    /**
+     * Get columns configuration
+     *
+     * @return array
+     */
+    public function getColumns()
+    {
+        return $this->config['columns'];
+    }
 }

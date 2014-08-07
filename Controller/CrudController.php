@@ -56,7 +56,8 @@ class CrudController
         $indexTemplate = $metadata->getTemplate('index');
         return $this->templating->renderResponse($indexTemplate, array(
             'entities' => $entities,
-            'templates' => $metadata->getTemplates()
+            'templates' => $metadata->getTemplates(),
+            'columns' => $metadata->getColumns()
         ));
     }
 }
