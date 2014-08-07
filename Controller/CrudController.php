@@ -4,6 +4,7 @@ namespace Jb\Bundle\SimpleCrudBundle\Controller;
 
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 /**
  * CrudController
@@ -23,14 +24,21 @@ class CrudController
     protected $configuration;
 
     /**
+     * @var \Symfony\Bundle\FrameworkBundle\Templating\EngineInterface
+     */
+    protected $templating;
+
+    /**
      * Constructor
      */
     public function __construct(
         RegistryInterface $doctrine,
-        CrudMetadataList $configuration
+        CrudMetadataList $configuration,
+        EngineInterface $templating
     ) {
         $this->doctrine = $doctrine;
         $this->configuration = $configuration;
+        $this->templating = $templating;
     }
 
     /**
@@ -40,11 +48,15 @@ class CrudController
      */
     public function indexAction($entity)
     {
-        $config = $this->configuration->getMetadata($entity);
-        var_dump($config);
-        $repository = $this->doctrine->getManager()->getRepository($entity);
+        $metadata = $this->configuration->getMetadata($entity);
+        $manager = $this->doctrine->getManager();
 
+        $entities = $manager->getRepository($entity)->findAll();
 
-        return new \Symfony\Component\HttpFoundation\Response('test');
+        $indexTemplate = $metadata->getTemplate('index');
+        return $this->templating->renderResponse($indexTemplate, array(
+            'entities' => $entities,
+            'templates' => $metadata->getTemplates()
+        ));
     }
 }

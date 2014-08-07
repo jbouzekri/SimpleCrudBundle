@@ -1,0 +1,7 @@
+{% extends app.request.xmlHttpRequest ? templates.layout_ajax : templates.layout %}
+
+{% block content %}
+    {% for entity in entities %}
+        {{ dump(entity) }}
+    {% endfor %}
+{% endblock %}

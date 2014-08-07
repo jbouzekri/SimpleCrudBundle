@@ -40,4 +40,26 @@ class CrudMetadata
     {
         return $this->entity;
     }
+
+    /**
+     * Get a template
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    public function getTemplate($key)
+    {
+        return $this->config['templates'][$key];
+    }
+
+    /**
+     * Get templates configuration
+     *
+     * @return array
+     */
+    public function getTemplates()
+    {
+        return $this->config['templates'];
+    }
 }

@@ -19,3 +19,4 @@ services:
         arguments:
             - @doctrine
             - @jb_simple_crud.metadata_list
+            - @templating

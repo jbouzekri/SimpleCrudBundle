@@ -38,14 +38,33 @@ class CrudEntityConfiguration implements ConfigurationInterface
         $rootNode = $treeBuilder->root($this->entity);
 
         $rootNode
+            ->addDefaultsIfNotSet()
             ->children()
-                ->arrayNode('templates')
-                    ->children()
-                        ->scalarNode('index')->isRequired()->end()
-                    ->end()
-                ->end()
+                ->append($this->addTemplatesNode())
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * Add templates tree node
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addTemplatesNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('templates');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->scalarNode('layout_ajax')->defaultValue('JbSimpleCrudBundle::layout_ajax.html.twig')->end()
+                ->scalarNode('layout')->defaultValue('JbSimpleCrudBundle::layout.html.twig')->end()
+                ->scalarNode('index')->defaultValue('JbSimpleCrudBundle:Crud:index.html.twig')->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }

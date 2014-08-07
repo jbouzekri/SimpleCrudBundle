@@ -60,11 +60,28 @@ class JbSimpleCrudExtension extends Extension
         foreach ($container->getParameter('kernel.bundles') as $bundle) {
             $reflection = new \ReflectionClass($bundle);
             if (is_file($file = dirname($reflection->getFilename()).'/Resources/config/crud_entities.yml')) {
-                $configs = array_merge($configs, Yaml::parse($file));
+                $configs = array_merge($configs, $this->parseYamlFile($file));
                 $container->addResource(new FileResource($file));
             }
         }
 
         return $configs;
+    }
+
+    /**
+     * Parse YAML file
+     *
+     * @param string $file
+     *
+     * @return array
+     */
+    protected function parseYamlFile($file)
+    {
+        $parsedConfig = Yaml::parse($file);
+        if (!is_array($parsedConfig)) {
+            $parsedConfig = array();
+        }
+
+        return $parsedConfig;
     }
 }
