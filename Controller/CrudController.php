@@ -2,7 +2,8 @@
 
 namespace Jb\Bundle\SimpleCrudBundle\Controller;
 
-use \Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList;
 
 /**
  * CrudController
@@ -17,12 +18,19 @@ class CrudController
     protected $doctrine;
 
     /**
+     * @var \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList
+     */
+    protected $configuration;
+
+    /**
      * Constructor
      */
     public function __construct(
-        RegistryInterface $doctrine
+        RegistryInterface $doctrine,
+        CrudMetadataList $configuration
     ) {
         $this->doctrine = $doctrine;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -32,9 +40,11 @@ class CrudController
      */
     public function indexAction($entity)
     {
+        $config = $this->configuration->getMetadata($entity);
+        var_dump($config);
         $repository = $this->doctrine->getManager()->getRepository($entity);
 
-        
+
         return new \Symfony\Component\HttpFoundation\Response('test');
     }
 }

@@ -1,6 +1,7 @@
 parameters:
     jb_simple_crud.routing_loader.class: Jb\Bundle\SimpleCrudBundle\Routing\CrudLoader
     jb_simple_crud.controller.class: Jb\Bundle\SimpleCrudBundle\Controller\CrudController
+    jb_simple_crud.metadata.class: Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList
 
 services:
     jb_simple_crud.routing_loader:
@@ -10,7 +11,11 @@ services:
         tags:
             - { name: routing.loader }
 
+    jb_simple_crud.metadata_list:
+        class: %jb_simple_crud.metadata.class%
+
     jb_simple_crud.controller:
         class: %jb_simple_crud.controller.class%
         arguments:
             - @doctrine
+            - @jb_simple_crud.metadata_list
