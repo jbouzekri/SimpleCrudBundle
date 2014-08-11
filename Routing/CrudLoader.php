@@ -116,6 +116,13 @@ class CrudLoader implements LoaderInterface
 
         // Base crud routes
         $data = array(
+            /**
+             * route name,
+             * path/pattern
+             * defaults
+             * requirements
+             * methods
+             */
             array(
                 $this->router->generateName('index', $metadata),
                 $patternPrefix,
