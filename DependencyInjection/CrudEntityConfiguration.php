@@ -49,6 +49,7 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->append($this->addTemplatesNode())
                 ->append($this->addColumnsNode())
                 ->append($this->addFormNode())
+                ->append($this->addLineActionsNode())
             ->end();
 
         return $treeBuilder;
@@ -72,6 +73,7 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->scalarNode('index')->defaultValue('JbSimpleCrudBundle:Crud:index.html.twig')->end()
                 ->scalarNode('create')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
                 ->scalarNode('edit')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
+                ->scalarNode('line_actions')->defaultValue('JbSimpleCrudBundle:Crud:_line_actions.html.twig')->end()
             ->end()
         ;
 
@@ -129,6 +131,43 @@ class CrudEntityConfiguration implements ConfigurationInterface
                     ->defaultValue(array())
                 ->end()
             ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Add line actions tree node
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addLineActionsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('line_actions');
+
+        $node
+            ->prototype('array')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('route')->isRequired()->end()
+                    ->scalarNode('method')->defaultValue('GET')->end()
+                    ->scalarNode('label')->isRequired()->end()
+                ->end()
+            ->end()
+            ->defaultValue(
+                array(
+                    'edit' => array(
+                        'route' => 'update',
+                        'label' => 'Edit'
+                    ),
+                    'Remove' => array(
+                        'route' => 'remove',
+                        'label' => 'Remove',
+                        'method' => 'POST'
+                    )
+                )
+            )
         ;
 
         return $node;

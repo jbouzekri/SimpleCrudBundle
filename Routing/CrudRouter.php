@@ -49,6 +49,7 @@ class CrudRouter
 
     /**
      * Generate a route name
+     * If $route starts with @ : use native router generator
      *
      * @param string $route
      * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
@@ -57,9 +58,12 @@ class CrudRouter
      */
     public function generateName($route, CrudMetadata $metadata)
     {
-        $page = $metadata->getPage();
-
-        return 'jb_simple_crud_' . str_replace('-', '_', $page) . '_' . $route;
+        if (strpos($route, '@') !== 0) {
+            $page = $metadata->getPage();
+            return 'jb_simple_crud_' . str_replace('-', '_', $page) . '_' . $route;
+        } else {
+            return substr($route, 1);
+        }
     }
 
     /**

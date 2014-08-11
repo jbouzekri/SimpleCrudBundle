@@ -17,7 +17,11 @@
                 {% for col in columns %}
                     <td>{{ attribute(entity, col) }}</td>
                 {% endfor %}
-                <td></td>
+                <td>{% include metadata.templates.line_actions with { metadata: metadata, entity: entity } %}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="{{ columns|length + 1 }}">No items</td>
             </tr>
         {% endfor %}
     </table>

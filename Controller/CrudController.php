@@ -135,7 +135,7 @@ class CrudController
         $entity = $this->doctrine->getRepository($metadata->getEntity())->find($id);
 
         $form = $this->formFactory->createForm(
-            $metadata->getFormCreate(),
+            $metadata->getFormEdit(),
             $entity,
             array('data_class' => $metadata->getEntity())
         );
@@ -158,5 +158,31 @@ class CrudController
             'form' => $form->createView(),
             'metadata' => $metadata
         ));
+    }
+
+    /**
+     * Remove action
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
+     * @param int $id
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function removeAction(Request $request, CrudMetadata $metadata, $id)
+    {
+        $em = $this->doctrine->getManager();
+
+        $entity = $em->getRepository($metadata->getEntity())->find($id);
+
+        $em->remove($entity);
+        $em->flush();
+
+        $request->getSession()->getFlashBag()->add(
+            'notice',
+            'Entity removed!'
+        );
+
+        return new RedirectResponse($this->router->generateCrudUrl('index', $metadata));
     }
 }

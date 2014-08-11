@@ -84,6 +84,21 @@ class CrudMetadata
     }
 
     /**
+     * Get form.edit configuration
+     *
+     * @return array
+     */
+    public function getFormEdit()
+    {
+        $fields = $this->config['form']['edit'];
+        if (count($fields) == 0) {
+            $fields = $this->getFormCreate();
+        }
+
+        return $fields;
+    }
+
+    /**
      * Get controller
      *
      * @return string
@@ -101,5 +116,15 @@ class CrudMetadata
     public function getPage()
     {
         return $this->config['page'];
+    }
+
+    /**
+     * Get line actions
+     *
+     * @return array
+     */
+    public function getLineActions()
+    {
+        return $this->config['line_actions'];
     }
 }

@@ -4,3 +4,9 @@
     {% block content %}
     {% endblock %}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">window.jQuery || document.write('<script src="//code.jquery.com/jquery-1.11.0.min.js"><'+'/script>');</script>
+    <script type="text/javascript" src="{{ asset('bundles/jbsimplecrud/js/crud.js') }}"></script>
+{% endblock %}
