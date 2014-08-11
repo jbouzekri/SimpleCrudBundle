@@ -72,4 +72,34 @@ class CrudMetadata
     {
         return $this->config['columns'];
     }
+
+    /**
+     * Get form.create configuration
+     *
+     * @return array
+     */
+    public function getFormCreate()
+    {
+        return $this->config['form']['create'];
+    }
+
+    /**
+     * Get controller
+     *
+     * @return string
+     */
+    public function getController()
+    {
+        return $this->config['controller'];
+    }
+
+    /**
+     * Get page (route prefix)
+     *
+     * @return string
+     */
+    public function getPage()
+    {
+        return $this->config['page'];
+    }
 }

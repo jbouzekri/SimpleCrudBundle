@@ -28,15 +28,15 @@ class JbSimpleCrudExtension extends Extension
         $config = $this->processConfiguration(new Configuration(), $configs);
 
         // Add available pages to container
-        $container->setParameter('jb_simple_crud.pages', $config['pages']);
+        $container->setParameter('jb_simple_crud.entities', $config['entities']);
 
         // Load crud configuration across bundles
         $crudConfigs = $this->getCrudYamlMappingConfiguration($container);
-        foreach ($config['pages'] as $configPage) {
+        foreach ($config['entities'] as $entity) {
             // Normalize configuration
-            $crudConfig = isset($crudConfigs[$configPage['entity']]) ? $crudConfigs[$configPage['entity']] : array();
-            $crudConfigs[$configPage['entity']] = $this->processConfiguration(
-                new CrudEntityConfiguration($configPage['entity']),
+            $crudConfig = isset($crudConfigs[$entity]) ? $crudConfigs[$entity] : array();
+            $crudConfigs[$entity] = $this->processConfiguration(
+                new CrudEntityConfiguration($entity),
                 array($crudConfig)
             );
         }

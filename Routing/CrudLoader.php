@@ -6,6 +6,8 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata;
 
 /**
  * Routing CrudLoader
@@ -22,23 +24,25 @@ class CrudLoader implements LoaderInterface
     /**
      * @var array
      */
-    protected $pages;
+    protected $entities;
+
+    /**
+     * @var array
+     */
+    protected $metadataList;
 
     /**
      * Constructor
      *
-     * @param array $pages {
-     *     An array of arrays each representing an entity and its url prefix
-     *
-     *     @type array $page {
-     *         @type string $type
-     *         @type string $entity
-     *     }
-     * }
+     * @param array $entities
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList $metadataList
      */
-    public function __construct(array $pages)
-    {
-        $this->pages = $pages;
+    public function __construct(
+        array $entities,
+        CrudMetadataList $metadataList
+    ) {
+        $this->entities = $entities;
+        $this->metadataList = $metadataList;
     }
 
     /**
@@ -52,8 +56,9 @@ class CrudLoader implements LoaderInterface
 
         $routes = new RouteCollection();
 
-        foreach ($this->pages as $page) {
-            $this->appendRoutes($routes, $page['type'], $page['entity']);
+        foreach ($this->entities as $entity) {
+            $metadata = $this->metadataList->getMetadata($entity);
+            $this->appendRoutes($routes, $metadata);
         }
 
         $this->loaded = true;
@@ -65,44 +70,13 @@ class CrudLoader implements LoaderInterface
      * Append route for a page type
      *
      * @param \Symfony\Component\Routing\RouteCollection $routes
-     * @param string $page
-     * @param string $entity
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
      *
      * @return void
      */
-    protected function appendRoutes(RouteCollection $routes, $page, $entity)
+    protected function appendRoutes(RouteCollection $routes, CrudMetadata $metadata)
     {
-        $routeNamePrefix = 'jb_simple_crud_'.str_replace('-', '_', $page);
-        $patternPrefix = '/'.  urlencode($page);
-
-        $routesConfigurations = array(
-            array(
-                $routeNamePrefix . "_index",
-                $patternPrefix,
-                array('_controller' => 'jb_simple_crud.controller:indexAction', 'entity' => $entity),
-                false
-            ),
-            array(
-                $routeNamePrefix . "_create",
-                $patternPrefix . '/create',
-                array('_controller' => 'jb_simple_crud.controller:createAction', 'entity' => $entity),
-                false
-            ),
-            array(
-                $routeNamePrefix . "_update",
-                $patternPrefix . '/{id}/update',
-                array('_controller' => 'jb_simple_crud.controller:updateAction', 'entity' => $entity),
-                true
-            ),
-            array(
-                $routeNamePrefix . "_remove",
-                $patternPrefix . '/{id}/remove',
-                array('_controller' => 'jb_simple_crud.controller:removeAction', 'entity' => $entity),
-                true
-            ),
-        );
-
-        foreach ($routesConfigurations as $configuration) {
+        foreach ($this->getRoutesConfiguration($metadata) as $configuration) {
             $routes->add(
                 $configuration[0],
                 $this->createRoute(
@@ -114,6 +88,59 @@ class CrudLoader implements LoaderInterface
         }
     }
 
+    /**
+     * Get route configuration data
+     *
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
+     *
+     * @return array
+     */
+    protected function getRoutesConfiguration(CrudMetadata $metadata)
+    {
+        $page = $metadata->getPage();
+        $controller = $metadata->getController();
+        $entity = $metadata->getEntity();
+
+        $routeNamePrefix = 'jb_simple_crud_'.str_replace('-', '_', $page);
+        $patternPrefix = '/' . urlencode($page);
+
+        // Base crud routes
+        $data = array(
+            array(
+                $routeNamePrefix . "_index",
+                $patternPrefix,
+                array('_controller' => $controller.':index', 'entity' => $entity),
+                false
+            ),
+            array(
+                $routeNamePrefix . "_create",
+                $patternPrefix . '/create',
+                array('_controller' => $controller.':create', 'entity' => $entity),
+                false
+            ),
+            array(
+                $routeNamePrefix . "_update",
+                $patternPrefix . '/{id}/update',
+                array('_controller' => $controller.':update', 'entity' => $entity),
+                true
+            ),
+            array(
+                $routeNamePrefix . "_remove",
+                $patternPrefix . '/{id}/remove',
+                array('_controller' => $controller.':remove', 'entity' => $entity),
+                true
+            ),
+        );
+
+        // Controller is a service. Append Action to _controller route definition
+        foreach ($data as $key => $configuration) {
+            if (strpos($controller, ':') === false) {
+                $data[$key][2]['_controller'] .= 'Action';
+            }
+        }
+
+        return $data;
+    }
     /**
      * Create a route
      *

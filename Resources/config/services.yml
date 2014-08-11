@@ -2,12 +2,14 @@ parameters:
     jb_simple_crud.routing_loader.class: Jb\Bundle\SimpleCrudBundle\Routing\CrudLoader
     jb_simple_crud.controller.class: Jb\Bundle\SimpleCrudBundle\Controller\CrudController
     jb_simple_crud.metadata.class: Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList
+    jb_simple_crud.form.factory.class: Jb\Bundle\SimpleCrudBundle\Form\Factory\CrudFormFactory
 
 services:
     jb_simple_crud.routing_loader:
         class: %jb_simple_crud.routing_loader.class%
         arguments:
-            - %jb_simple_crud.pages%
+            - %jb_simple_crud.entities%
+            - @jb_simple_crud.metadata_list
         tags:
             - { name: routing.loader }
 
@@ -20,3 +22,9 @@ services:
             - @doctrine
             - @jb_simple_crud.metadata_list
             - @templating
+            - @jb_simple_crud.form.factory
+
+    jb_simple_crud.form.factory:
+        class: %jb_simple_crud.form.factory.class%
+        arguments:
+            - @form.factory

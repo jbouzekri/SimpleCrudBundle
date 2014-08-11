@@ -24,12 +24,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('pages')
-                    ->prototype('array')
-                        ->children()
-                            ->scalarNode('type')->isRequired()->end()
-                            ->scalarNode('entity')->isRequired()->end()
-                        ->end()
+                ->arrayNode('entities')
+                    ->prototype('scalar')
+                        ->defaultValue(array())
                     ->end()
                 ->end()
             ->end();

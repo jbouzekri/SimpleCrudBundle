@@ -40,8 +40,15 @@ class CrudEntityConfiguration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('controller')
+                    ->defaultValue('jb_simple_crud.controller')
+                ->end()
+                ->scalarNode('page')
+                    ->isRequired()
+                ->end()
                 ->append($this->addTemplatesNode())
                 ->append($this->addColumnsNode())
+                ->append($this->addFormNode())
             ->end();
 
         return $treeBuilder;
@@ -63,6 +70,7 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->scalarNode('layout_ajax')->defaultValue('JbSimpleCrudBundle::layout_ajax.html.twig')->end()
                 ->scalarNode('layout')->defaultValue('JbSimpleCrudBundle::layout.html.twig')->end()
                 ->scalarNode('index')->defaultValue('JbSimpleCrudBundle:Crud:index.html.twig')->end()
+                ->scalarNode('create')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
             ->end()
         ;
 
@@ -83,6 +91,43 @@ class CrudEntityConfiguration implements ConfigurationInterface
             ->prototype('scalar')
             ->end()
             ->defaultValue(array('id'))
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Add form tree node
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addFormNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('form');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->arrayNode('create')
+                    ->beforeNormalization()
+                    ->ifString()
+                        ->then(function($value) { return array('type' => $value); })
+                    ->end()
+                    ->prototype('scalar')
+                    ->end()
+                    ->defaultValue(array())
+                ->end()
+                ->arrayNode('edit')
+                    ->beforeNormalization()
+                    ->ifString()
+                        ->then(function($value) { return array('type' => $value); })
+                    ->end()
+                    ->prototype('scalar')
+                    ->end()
+                    ->defaultValue(array())
+                ->end()
+            ->end()
         ;
 
         return $node;
