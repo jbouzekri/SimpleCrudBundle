@@ -87,7 +87,15 @@ class CrudLoader implements LoaderInterface
         foreach ($this->getRoutesConfiguration($metadata) as $configuration) {
             $routes->add(
                 $configuration[0],
-                new Route($configuration[1], $configuration[2], $configuration[3])
+                new Route(
+                    $configuration[1],
+                    $configuration[2],
+                    $configuration[3],
+                    array(),
+                    '',
+                    array(),
+                    $configuration[4]
+                )
             );
         }
     }
@@ -112,53 +120,39 @@ class CrudLoader implements LoaderInterface
                 $this->router->generateName('index', $metadata),
                 $patternPrefix,
                 array('_controller' => $controller.':index', 'entity' => $entity),
+                array(),
                 array()
             ),
             array(
                 $this->router->generateName('create', $metadata),
                 $patternPrefix . '/create',
                 array('_controller' => $controller.':create', 'entity' => $entity),
-                array()
+                array(),
+                array('GET', 'POST')
             ),
             array(
                 $this->router->generateName('update', $metadata),
                 $patternPrefix . '/{id}/update',
                 array('_controller' => $controller.':update', 'entity' => $entity),
-                array('id' => '\d+')
+                array('id' => '\d+'),
+                array('GET', 'POST')
             ),
             array(
                 $this->router->generateName('remove', $metadata),
                 $patternPrefix . '/{id}/remove',
                 array('_controller' => $controller.':remove', 'entity' => $entity),
-                array('id' => '\d+')
+                array('id' => '\d+'),
+                array('POST')
             ),
         );
 
         // Controller is a service. Append Action to _controller route definition
-        return array_map(function($item) use ($controller) {
+        return array_map(function ($item) use ($controller) {
             if (strpos($controller, ':') === false) {
                 $item[2]['_controller'] .= 'Action';
             }
             return $item;
         }, $data);
-    }
-    /**
-     * Create a route
-     *
-     * @param string $pattern
-     * @param array $defaults
-     * @param array $requirements
-     *
-     * @return \Symfony\Component\Routing\Route
-     */
-    protected function createRoute($pattern, $defaults, $requirements = array())
-    {
-        $requirements = array();
-        if ($withId) {
-            $requirements['parameter'] = '\d+';
-        }
-
-        return new Route($pattern, $defaults, $requirements);
     }
 
     /**

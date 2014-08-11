@@ -115,7 +115,9 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->arrayNode('create')
                     ->beforeNormalization()
                     ->ifString()
-                        ->then(function($value) { return array('type' => $value); })
+                        ->then(function ($value) {
+                            return array('type' => $value);
+                        })
                     ->end()
                     ->prototype('scalar')
                     ->end()
@@ -124,7 +126,9 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->arrayNode('edit')
                     ->beforeNormalization()
                     ->ifString()
-                        ->then(function($value) { return array('type' => $value); })
+                        ->then(function ($value) {
+                            return array('type' => $value);
+                        })
                     ->end()
                     ->prototype('scalar')
                     ->end()
