@@ -22,6 +22,11 @@ class CrudLoader implements LoaderInterface
     private $loaded = false;
 
     /**
+     * @var \Jb\Bundle\SimpleCrudBundle\Routing\CrudRouter
+     */
+    protected $router;
+
+    /**
      * @var array
      */
     protected $entities;
@@ -34,13 +39,16 @@ class CrudLoader implements LoaderInterface
     /**
      * Constructor
      *
+     * @param \Jb\Bundle\SimpleCrudBundle\Routing\CrudRouter $router
      * @param array $entities
      * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList $metadataList
      */
     public function __construct(
+        CrudRouter $router,
         array $entities,
         CrudMetadataList $metadataList
     ) {
+        $this->router = $router;
         $this->entities = $entities;
         $this->metadataList = $metadataList;
     }
@@ -79,11 +87,7 @@ class CrudLoader implements LoaderInterface
         foreach ($this->getRoutesConfiguration($metadata) as $configuration) {
             $routes->add(
                 $configuration[0],
-                $this->createRoute(
-                    $configuration[1],
-                    $configuration[2],
-                    $configuration[3]
-                )
+                new Route($configuration[1], $configuration[2], $configuration[3])
             );
         }
     }
@@ -97,60 +101,57 @@ class CrudLoader implements LoaderInterface
      */
     protected function getRoutesConfiguration(CrudMetadata $metadata)
     {
-        $page = $metadata->getPage();
         $controller = $metadata->getController();
         $entity = $metadata->getEntity();
 
-        $routeNamePrefix = 'jb_simple_crud_'.str_replace('-', '_', $page);
-        $patternPrefix = '/' . urlencode($page);
+        $patternPrefix = '/' . urlencode($metadata->getPage());
 
         // Base crud routes
         $data = array(
             array(
-                $routeNamePrefix . "_index",
+                $this->router->generateName('index', $metadata),
                 $patternPrefix,
                 array('_controller' => $controller.':index', 'entity' => $entity),
-                false
+                array()
             ),
             array(
-                $routeNamePrefix . "_create",
+                $this->router->generateName('create', $metadata),
                 $patternPrefix . '/create',
                 array('_controller' => $controller.':create', 'entity' => $entity),
-                false
+                array()
             ),
             array(
-                $routeNamePrefix . "_update",
+                $this->router->generateName('update', $metadata),
                 $patternPrefix . '/{id}/update',
                 array('_controller' => $controller.':update', 'entity' => $entity),
-                true
+                array('id' => '\d+')
             ),
             array(
-                $routeNamePrefix . "_remove",
+                $this->router->generateName('remove', $metadata),
                 $patternPrefix . '/{id}/remove',
                 array('_controller' => $controller.':remove', 'entity' => $entity),
-                true
+                array('id' => '\d+')
             ),
         );
 
         // Controller is a service. Append Action to _controller route definition
-        foreach ($data as $key => $configuration) {
+        return array_map(function($item) use ($controller) {
             if (strpos($controller, ':') === false) {
-                $data[$key][2]['_controller'] .= 'Action';
+                $item[2]['_controller'] .= 'Action';
             }
-        }
-
-        return $data;
+            return $item;
+        }, $data);
     }
     /**
      * Create a route
      *
      * @param string $pattern
      * @param array $defaults
-     * @param bool $withId
+     * @param array $requirements
      *
      * @return \Symfony\Component\Routing\Route
      */
-    protected function createRoute($pattern, $defaults, $withId = false)
+    protected function createRoute($pattern, $defaults, $requirements = array())
     {
         $requirements = array();
         if ($withId) {

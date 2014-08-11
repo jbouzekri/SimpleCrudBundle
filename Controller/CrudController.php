@@ -5,8 +5,11 @@ namespace Jb\Bundle\SimpleCrudBundle\Controller;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Jb\Bundle\SimpleCrudBundle\Form\Factory\FormFactoryInterface;
 use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList;
+use Jb\Bundle\SimpleCrudBundle\Routing\CrudRouter;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata;
 
 /**
  * CrudController
@@ -36,39 +39,46 @@ class CrudController
     protected $formFactory;
 
     /**
+     * @var \Jb\Bundle\SimpleCrudBundle\Routing\CrudRouter
+     */
+    protected $router;
+
+    /**
      * Constructor
      */
     public function __construct(
         RegistryInterface $doctrine,
         CrudMetadataList $configuration,
         EngineInterface $templating,
-        FormFactoryInterface $formFactory
+        FormFactoryInterface $formFactory,
+        CrudRouter $router
     ) {
         $this->doctrine = $doctrine;
         $this->configuration = $configuration;
         $this->templating = $templating;
         $this->formFactory = $formFactory;
+        $this->router = $router;
     }
 
     /**
      * List entity
      *
-     * @param string $entity the entity namespace
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction($entity)
+    public function indexAction(CrudMetadata $metadata)
     {
-        $metadata = $this->configuration->getMetadata($entity);
         $manager = $this->doctrine->getManager();
 
-        $entities = $manager->getRepository($entity)->findAll();
+        $entities = $manager->getRepository($metadata->getEntity())->findAll();
 
         $indexTemplate = $metadata->getTemplate('index');
         return $this->templating->renderResponse($indexTemplate, array(
             'entities' => $entities,
             'templates' => $metadata->getTemplates(),
-            'columns' => $metadata->getColumns()
+            'columns' => $metadata->getColumns(),
+            'metadata' => $metadata
         ));
     }
 
@@ -76,13 +86,13 @@ class CrudController
      * Create entity
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string $entity the entity namespace
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function createAction(Request $request, $entity)
+    public function createAction(Request $request, CrudMetadata $metadata)
     {
-        $metadata = $this->configuration->getMetadata($entity);
+        $entity = $metadata->getEntity();
 
         $newEntity = new $entity();
         $form = $this->formFactory->createForm($metadata->getFormCreate(), $newEntity);
@@ -94,8 +104,14 @@ class CrudController
             $em->persist($newEntity);
             $em->flush();
 
-            //return $this->redirect(
-            //    $this->generateUrl('jb_test_admin_show', array('id' => $entity->getId())));
+            $request->getSession()->getFlashBag()->add(
+                'notice',
+                'Your changes were saved!'
+            );
+
+            return new RedirectResponse(
+                $this->router->generateCrudUrl('update', $metadata, array('id' => $newEntity->getId()))
+            );
         }
 
         $createTemplate = $metadata->getTemplate('create');
