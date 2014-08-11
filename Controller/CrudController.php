@@ -95,7 +95,7 @@ class CrudController
         $entity = $metadata->getEntity();
 
         $newEntity = new $entity();
-        $form = $this->formFactory->createForm($metadata->getFormCreate(), $newEntity);
+        $form = $this->formFactory->createForm($metadata->getFormCreate(), $newEntity, array('data_class' => $entity));
 
         $form->handleRequest($request);
 
@@ -106,7 +106,7 @@ class CrudController
 
             $request->getSession()->getFlashBag()->add(
                 'notice',
-                'Your changes were saved!'
+                'New entity created!'
             );
 
             return new RedirectResponse(
@@ -117,7 +117,46 @@ class CrudController
         $createTemplate = $metadata->getTemplate('create');
         return $this->templating->renderResponse($createTemplate, array(
             'form' => $form->createView(),
-            'templates' => $metadata->getTemplates()
+            'metadata' => $metadata
+        ));
+    }
+
+    /**
+     * Update entity
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
+     * @param int $id
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function updateAction(Request $request, CrudMetadata $metadata, $id)
+    {
+        $entity = $this->doctrine->getRepository($metadata->getEntity())->find($id);
+
+        $form = $this->formFactory->createForm(
+            $metadata->getFormCreate(),
+            $entity,
+            array('data_class' => $metadata->getEntity())
+        );
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->doctrine->getManager();
+            $em->persist($entity);
+            $em->flush();
+
+            $request->getSession()->getFlashBag()->add(
+                'notice',
+                'Your changes were saved!'
+            );
+        }
+
+        $createTemplate = $metadata->getTemplate('edit');
+        return $this->templating->renderResponse($createTemplate, array(
+            'form' => $form->createView(),
+            'metadata' => $metadata
         ));
     }
 }

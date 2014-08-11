@@ -1,7 +1,9 @@
-{% extends app.request.xmlHttpRequest ? templates.layout_ajax : templates.layout %}
+{% extends app.request.xmlHttpRequest ? metadata.templates.layout_ajax : metadata.templates.layout %}
 
 {% block content %}
     <a href="{{ crud_path('create', metadata) }}" class="btn btn-primary">Create</a>
+
+    {% include 'JbSimpleCrudBundle:Crud:_flashbag.html.twig' %}
 
     <table class="table">
         <tr>

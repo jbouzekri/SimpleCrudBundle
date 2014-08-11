@@ -71,6 +71,7 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->scalarNode('layout')->defaultValue('JbSimpleCrudBundle::layout.html.twig')->end()
                 ->scalarNode('index')->defaultValue('JbSimpleCrudBundle:Crud:index.html.twig')->end()
                 ->scalarNode('create')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
+                ->scalarNode('edit')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
             ->end()
         ;
 
