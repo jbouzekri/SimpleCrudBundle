@@ -1,6 +1,17 @@
 {% extends app.request.xmlHttpRequest ? metadata.templates.layout_ajax : metadata.templates.layout %}
 
 {% block content %}
+    {% if metadata.titles.index %}
+        {% if form.vars.value.id %}
+            <h1>{{ metadata.titles.edit|trans({
+                    '%entity_name%': metadata.formatedName,
+                    '%id%': form.vars.value.id
+                }, metadata.translationDomain) }}</h1>
+        {% else %}
+            <h1>{{ metadata.titles.create|trans({'%entity_name%': metadata.formatedName}, metadata.translationDomain) }}</h1>
+        {% endif %}
+    {% endif %}
+
     {% include metadata.templates.flashbag %}
 
     {{ form(form) }}

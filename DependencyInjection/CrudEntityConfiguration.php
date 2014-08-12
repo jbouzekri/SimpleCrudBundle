@@ -47,9 +47,13 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->scalarNode('page')
                     ->isRequired()
                 ->end()
+                ->scalarNode('formated_name')
+                    ->defaultValue('undefined')
+                ->end()
                 ->scalarNode('translation_domain')
                     ->defaultValue('messages')
                 ->end()
+                ->append($this->addTitleNode())
                 ->append($this->addTemplatesNode())
                 ->append($this->addColumnsNode())
                 ->append($this->addFormNode())
@@ -58,6 +62,28 @@ class CrudEntityConfiguration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * Add titles tree node
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addTitleNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('titles');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->scalarNode('index')->defaultValue('List of %%entity_name%%')->end()
+                ->scalarNode('create')->defaultValue('Create new %%entity_name%%')->end()
+                ->scalarNode('edit')->defaultValue('Edit entity #%%id%%')->end()
+            ->end()
+        ;
+
+        return $node;
     }
 
     /**

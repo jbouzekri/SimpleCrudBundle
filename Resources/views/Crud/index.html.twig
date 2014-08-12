@@ -1,6 +1,10 @@
 {% extends app.request.xmlHttpRequest ? metadata.templates.layout_ajax : metadata.templates.layout %}
 
 {% block content %}
+    {% if metadata.titles.index %}
+        <h1>{{ metadata.titles.index|trans({'%entity_name%': metadata.formatedName}, metadata.translationDomain) }}</h1>
+    {% endif %}
+
     {% include metadata.templates.main_actions with { metadata: metadata } %}
 
     {% include metadata.templates.flashbag %}

@@ -64,6 +64,16 @@ class CrudMetadata
     }
 
     /**
+     * Get titles configuration
+     *
+     * @return array
+     */
+    public function getTitles()
+    {
+        return $this->config['titles'];
+    }
+
+    /**
      * Get columns configuration
      *
      * @return array
@@ -116,6 +126,16 @@ class CrudMetadata
     public function getPage()
     {
         return $this->config['page'];
+    }
+
+    /**
+     * Get formated name
+     *
+     * @return string
+     */
+    public function getFormatedName()
+    {
+        return $this->config['formated_name'];
     }
 
     /**
