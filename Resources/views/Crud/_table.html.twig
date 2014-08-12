@@ -1,0 +1,21 @@
+<table class="table">
+    <thead>
+        {% include metadata.templates.thead_line with {
+            columns: columns,
+            metadata: metadata
+        }%}
+    </thead>
+    <tbody>
+        {% for entity in entities %}
+            {% include metadata.templates.tbody_line with {
+                columns: columns,
+                entity: entity,
+                metadata: metadata
+            }%}
+        {% else %}
+            <tr>
+                <td colspan="{% if metadata.lineActions|length %}{{ columns|length + 1 }}{% else %}{{ columns|length }}{% endif %}">No items</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

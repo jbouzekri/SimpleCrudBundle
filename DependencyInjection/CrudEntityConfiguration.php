@@ -4,6 +4,7 @@ namespace Jb\Bundle\SimpleCrudBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 /**
  * CrudEntityConfiguration configuration structure.
@@ -46,9 +47,13 @@ class CrudEntityConfiguration implements ConfigurationInterface
                 ->scalarNode('page')
                     ->isRequired()
                 ->end()
+                ->scalarNode('translation_domain')
+                    ->defaultValue('messages')
+                ->end()
                 ->append($this->addTemplatesNode())
                 ->append($this->addColumnsNode())
                 ->append($this->addFormNode())
+                ->append($this->addMainActionsNode())
                 ->append($this->addLineActionsNode())
             ->end();
 
@@ -70,9 +75,14 @@ class CrudEntityConfiguration implements ConfigurationInterface
             ->children()
                 ->scalarNode('layout_ajax')->defaultValue('JbSimpleCrudBundle::layout_ajax.html.twig')->end()
                 ->scalarNode('layout')->defaultValue('JbSimpleCrudBundle::layout.html.twig')->end()
+                ->scalarNode('flashbag')->defaultValue('JbSimpleCrudBundle:Crud:_flashbag.html.twig')->end()
                 ->scalarNode('index')->defaultValue('JbSimpleCrudBundle:Crud:index.html.twig')->end()
+                ->scalarNode('main_actions')->defaultValue('JbSimpleCrudBundle:Crud:_main_actions.html.twig')->end()
                 ->scalarNode('create')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
                 ->scalarNode('edit')->defaultValue('JbSimpleCrudBundle:Crud:edit.html.twig')->end()
+                ->scalarNode('table')->defaultValue('JbSimpleCrudBundle:Crud:_table.html.twig')->end()
+                ->scalarNode('thead_line')->defaultValue('JbSimpleCrudBundle:Crud:_thead_line.html.twig')->end()
+                ->scalarNode('tbody_line')->defaultValue('JbSimpleCrudBundle:Crud:_tbody_line.html.twig')->end()
                 ->scalarNode('line_actions')->defaultValue('JbSimpleCrudBundle:Crud:_line_actions.html.twig')->end()
             ->end()
         ;
@@ -141,6 +151,32 @@ class CrudEntityConfiguration implements ConfigurationInterface
     }
 
     /**
+     * Add main actions tree node
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addMainActionsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('main_actions');
+
+        $this->addRoutesArray($node);
+
+        $node
+            ->defaultValue(
+                array(
+                    'create' => array(
+                        'route' => 'create',
+                        'label' => 'Create'
+                    )
+                )
+            )
+        ;
+
+        return $node;
+    }
+
+    /**
      * Add line actions tree node
      *
      * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
@@ -150,15 +186,9 @@ class CrudEntityConfiguration implements ConfigurationInterface
         $builder = new TreeBuilder();
         $node = $builder->root('line_actions');
 
+        $this->addRoutesArray($node);
+
         $node
-            ->prototype('array')
-                ->addDefaultsIfNotSet()
-                ->children()
-                    ->scalarNode('route')->isRequired()->end()
-                    ->scalarNode('method')->defaultValue('GET')->end()
-                    ->scalarNode('label')->isRequired()->end()
-                ->end()
-            ->end()
             ->defaultValue(
                 array(
                     'edit' => array(
@@ -175,5 +205,23 @@ class CrudEntityConfiguration implements ConfigurationInterface
         ;
 
         return $node;
+    }
+
+    /**
+     * Add routes array to a treebuilder
+     *
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    protected function addRoutesArray(ArrayNodeDefinition $node)
+    {
+        $node
+            ->prototype('array')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('route')->isRequired()->end()
+                    ->scalarNode('method')->defaultValue('GET')->end()
+                    ->scalarNode('label')->isRequired()->end()
+                ->end()
+            ->end();
     }
 }

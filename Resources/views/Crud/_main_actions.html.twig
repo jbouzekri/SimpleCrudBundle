@@ -1,0 +1,7 @@
+{% for key, action in metadata.mainActions %}
+    <a href="{{ crud_path(action.route, metadata) }}"
+       {% if action.method is defined %}data-method="{{ action.method }}"{% endif %}
+       class="btn btn-primary">
+        {{ action.label }}
+    </a>
+{% endfor %}

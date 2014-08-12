@@ -27,6 +27,7 @@ class CrudFormFactory implements FormFactoryInterface
     }
 
     /**
+     * Create a form
      *
      * @param array $configuration
      * @param mixed $data

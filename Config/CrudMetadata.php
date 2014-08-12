@@ -127,4 +127,24 @@ class CrudMetadata
     {
         return $this->config['line_actions'];
     }
+
+    /**
+     * Get main actions
+     *
+     * @return array
+     */
+    public function getMainActions()
+    {
+        return $this->config['main_actions'];
+    }
+
+    /**
+     * Get translation domain
+     *
+     * @return array
+     */
+    public function getTranslationDomain()
+    {
+        return $this->config['translation_domain'];
+    }
 }

@@ -95,7 +95,11 @@ class CrudController
         $entity = $metadata->getEntity();
 
         $newEntity = new $entity();
-        $form = $this->formFactory->createForm($metadata->getFormCreate(), $newEntity, array('data_class' => $entity));
+        $form = $this->formFactory->createForm(
+            $metadata->getFormCreate(),
+            $newEntity,
+            array('data_class' => $entity, 'translation_domain' => $metadata->getTranslationDomain())
+        );
 
         $form->handleRequest($request);
 
@@ -137,7 +141,7 @@ class CrudController
         $form = $this->formFactory->createForm(
             $metadata->getFormEdit(),
             $entity,
-            array('data_class' => $metadata->getEntity())
+            array('data_class' => $metadata->getEntity(), 'translation_domain' => $metadata->getTranslationDomain())
         );
 
         $form->handleRequest($request);

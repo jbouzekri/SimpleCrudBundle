@@ -1,0 +1,8 @@
+<tr>
+    {% for col in columns %}
+        <td>{{ attribute(entity, col) }}</td>
+    {% endfor %}
+    {% if metadata.lineActions|length %}
+        <td>{% include metadata.templates.line_actions with { metadata: metadata, entity: entity } %}</td>
+    {% endif %}
+</tr>

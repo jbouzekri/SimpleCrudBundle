@@ -1,7 +1,7 @@
 {% extends app.request.xmlHttpRequest ? metadata.templates.layout_ajax : metadata.templates.layout %}
 
 {% block content %}
-    {% include 'JbSimpleCrudBundle:Crud:_flashbag.html.twig' %}
+    {% include metadata.templates.flashbag %}
 
     {{ form(form) }}
 {% endblock %}

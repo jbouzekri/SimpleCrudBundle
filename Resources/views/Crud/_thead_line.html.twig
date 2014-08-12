@@ -1,0 +1,8 @@
+<tr>
+    {% for col in columns %}
+        <th>{{ col }}</th>
+    {% endfor %}
+    {% if metadata.lineActions|length %}
+        <th>actions</th>
+    {% endif %}
+</tr>

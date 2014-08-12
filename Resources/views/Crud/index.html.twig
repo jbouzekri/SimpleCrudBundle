@@ -1,28 +1,13 @@
 {% extends app.request.xmlHttpRequest ? metadata.templates.layout_ajax : metadata.templates.layout %}
 
 {% block content %}
-    <a href="{{ crud_path('create', metadata) }}" class="btn btn-primary">Create</a>
+    {% include metadata.templates.main_actions with { metadata: metadata } %}
 
-    {% include 'JbSimpleCrudBundle:Crud:_flashbag.html.twig' %}
+    {% include metadata.templates.flashbag %}
 
-    <table class="table">
-        <tr>
-            {% for col in columns %}
-                <th>{{ col }}</th>
-            {% endfor %}
-            <th>actions</th>
-        </tr>
-        {% for entity in entities %}
-            <tr>
-                {% for col in columns %}
-                    <td>{{ attribute(entity, col) }}</td>
-                {% endfor %}
-                <td>{% include metadata.templates.line_actions with { metadata: metadata, entity: entity } %}</td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="{{ columns|length + 1 }}">No items</td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% include metadata.templates.table with {
+        columns: columns,
+        entities: entities,
+        metadata: metadata
+    }%}
 {% endblock %}
