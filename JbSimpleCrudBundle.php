@@ -4,6 +4,7 @@ namespace Jb\Bundle\SimpleCrudBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Jb\Bundle\SimpleCrudBundle\DependencyInjection\Compiler\SubmitActionCompilerPass;
 
 /**
  * JbSimpleCrudBundle bundle
@@ -17,5 +18,8 @@ class JbSimpleCrudBundle extends Bundle
      */
     public function build(ContainerBuilder $container)
     {
+        parent::build($container);
+
+        $container->addCompilerPass(new SubmitActionCompilerPass());
     }
 }

@@ -6,10 +6,12 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Jb\Bundle\SimpleCrudBundle\Form\Factory\FormFactoryInterface;
 use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataList;
 use Jb\Bundle\SimpleCrudBundle\Routing\CrudRouter;
 use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata;
+use Jb\Bundle\SimpleCrudBundle\Form\Submit\SubmitActionChain;
 
 /**
  * CrudController
@@ -44,6 +46,11 @@ class CrudController
     protected $router;
 
     /**
+     * @var \Jb\Bundle\SimpleCrudBundle\Form\Submit\SubmitActionChain
+     */
+    protected $submitActions;
+
+    /**
      * Constructor
      */
     public function __construct(
@@ -51,13 +58,15 @@ class CrudController
         CrudMetadataList $configuration,
         EngineInterface $templating,
         FormFactoryInterface $formFactory,
-        CrudRouter $router
+        CrudRouter $router,
+        SubmitActionChain $submitActions
     ) {
         $this->doctrine = $doctrine;
         $this->configuration = $configuration;
         $this->templating = $templating;
         $this->formFactory = $formFactory;
         $this->router = $router;
+        $this->submitActions = $submitActions;
     }
 
     /**
@@ -104,17 +113,26 @@ class CrudController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->doctrine->getManager();
-            $em->persist($newEntity);
-            $em->flush();
+            // Find the submit action
+            $submitName = $form->getClickedButton()->getName();
+            $submitAction = $this->submitActions->getSubmitAction($submitName);
 
+            // Process the form
+            $response = $submitAction->submit($form, $request, $metadata);
+
+            // Submit action return a response. Return it.
+            if ($response instanceof Response) {
+                return $response;
+            }
+
+            // Else default behavior for this action
             $request->getSession()->getFlashBag()->add(
                 'notice',
                 'New entity created!'
             );
 
             return new RedirectResponse(
-                $this->router->generateCrudUrl('update', $metadata, array('id' => $newEntity->getId()))
+                $this->router->generateCrudUrl('update', $metadata, array('id' => $form->getData()->getId()))
             );
         }
 

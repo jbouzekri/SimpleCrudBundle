@@ -24,6 +24,7 @@ class JbSimpleCrudExtension extends Extension
         // Classic bundle configuration loader
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+        $loader->load('submit_actions.yml');
 
         $config = $this->processConfiguration(new Configuration(), $configs);
 
@@ -41,6 +42,7 @@ class JbSimpleCrudExtension extends Extension
             );
         }
 
+        // Pass all configuration loaded to metadata service
         $crudEntityMetadata = $container->getDefinition('jb_simple_crud.metadata_list');
         $crudEntityMetadata->addMethodCall('addConfigs', array($crudConfigs));
     }
