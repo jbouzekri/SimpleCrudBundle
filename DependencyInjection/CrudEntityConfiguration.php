@@ -261,12 +261,28 @@ class CrudEntityConfiguration implements ConfigurationInterface
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
-                            ->scalarNode('label')->end()
+                            ->arrayNode('options')
+                                ->prototype('variable')
+                                ->end()
+                                ->defaultValue(array())
+                            ->end()
                         ->end()
                     ->end()
                     ->defaultValue(array(
                         'default' => array(
-                            'type' => 'submit'
+                            'type' => 'submit',
+                            'options' => array(
+                                'label' => 'Save',
+                                'attr' => array(
+                                    'class' => 'btn btn-primary'
+                                )
+                            )
+                        ),
+                        'back' => array(
+                            'type' => 'jb_crud_link',
+                            'options' => array(
+                                'route' => 'index'
+                            )
                         )
                     ))
                 ->end()

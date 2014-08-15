@@ -3,7 +3,7 @@
 namespace Jb\Bundle\SimpleCrudBundle\Form\Factory;
 
 use Symfony\Component\Form\FormFactoryInterface as SfFormFactoryInterface;
-use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata;
 
 /**
  * CrudFormFactory
@@ -30,14 +30,17 @@ class CrudFormFactory implements FormFactoryInterface
     /**
      * Create a form
      *
-     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm $configuration
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
+     * @param string $formType
      * @param mixed $data
      * @param array $options
      *
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function createForm(CrudMetadataForm $configuration, $data, $options = array())
+    public function createForm(CrudMetadata $metadata, $formType, $data, $options = array())
     {
+        $configuration = $metadata->getForm($formType);
+
         $fields = $configuration->getFields();
         if (isset($fields['type'])) {
             return $this->formFactory->create($fields['type'], $data, $options);
@@ -50,7 +53,14 @@ class CrudFormFactory implements FormFactoryInterface
 
         // Add submit button or back link
         foreach ($configuration->getActions() as $name => $action) {
-            $formBuilder->add($name, $action['type']);
+
+            // Howto pass metadata to jb_crud_link form field ???
+            $options = $action['options'];
+            if ($action['type'] === 'jb_crud_link') {
+                $options['metadata'] = $metadata;
+            }
+
+            $formBuilder->add($name, $action['type'], $options);
         }
 
         return $formBuilder->getForm();

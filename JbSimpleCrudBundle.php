@@ -5,6 +5,7 @@ namespace Jb\Bundle\SimpleCrudBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Jb\Bundle\SimpleCrudBundle\DependencyInjection\Compiler\SubmitActionCompilerPass;
+use Jb\Bundle\SimpleCrudBundle\DependencyInjection\Compiler\FormResourceCompilerPass;
 
 /**
  * JbSimpleCrudBundle bundle
@@ -21,5 +22,6 @@ class JbSimpleCrudBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new SubmitActionCompilerPass());
+        $container->addCompilerPass(new FormResourceCompilerPass());
     }
 }

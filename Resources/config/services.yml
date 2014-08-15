@@ -7,6 +7,7 @@ parameters:
     jb_simple_crud.crud_metadata.converter.class: Jb\Bundle\SimpleCrudBundle\Request\ParamConverter\CrudMetadataParamConverter
     jb_simple_crud.twig_extension.router.class: Jb\Bundle\SimpleCrudBundle\Twig\RouterExtension
     jb_simple_crud.submit_action.chain.class: Jb\Bundle\SimpleCrudBundle\Form\Submit\SubmitActionChain
+    jb_simple_crud.form.type.link.class: Jb\Bundle\SimpleCrudBundle\Form\Type\LinkType
 
 services:
     jb_simple_crud.router:
@@ -57,3 +58,10 @@ services:
 
     jb_simple_crud.submit_action.chain:
         class: "%jb_simple_crud.submit_action.chain.class%"
+
+    jb_simple_crud.form.type.link:
+        class: %jb_simple_crud.form.type.link.class%
+        arguments:
+            - @jb_simple_crud.router
+        tags:
+            - { name: form.type, alias: jb_crud_link }

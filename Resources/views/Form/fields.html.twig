@@ -1,0 +1,12 @@
+{% block jb_crud_link_widget %}
+    {% spaceless %}
+        <a href="{{ href }}" class="btn btn-default">
+            {% if label is empty -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+            {{ label|trans({}, translation_domain) }}
+        </a>
+    {% endspaceless %}
+{% endblock %}
+qs
+dsqdqsdsq

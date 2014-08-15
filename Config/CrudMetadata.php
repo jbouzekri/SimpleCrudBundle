@@ -84,27 +84,20 @@ class CrudMetadata
     }
 
     /**
-     * Get form.create configuration
+     * Get form
      *
+     * @param string $type
+     * @param string $default
      * @return \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm
      */
-    public function getFormCreate()
+    public function getForm($type, $default = 'create')
     {
-        return new CrudMetadataForm($this->config['form']['create']);
-    }
-
-    /**
-     * Get form.edit configuration
-     *
-     * @return array
-     */
-    public function getFormEdit()
-    {
-        if (count($this->config['form']['edit']['fields']) === 0) {
-            return $this->getFormCreate();
+        $config = $this->config['form'][$default];
+        if (count($this->config['form'][$type]['fields']) > 0) {
+            $config = $this->config['form'][$type];
         }
 
-        return new CrudMetadataForm($this->config['form']['edit']);
+        return new CrudMetadataForm($config);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Jb\Bundle\SimpleCrudBundle\Form\Factory;
 
-use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata;
 
 /**
  *
@@ -11,13 +11,14 @@ use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm;
 interface FormFactoryInterface
 {
     /**
-     * Create a form using metadata configuration
+     * Create a form
      *
-     * @param array $configuration
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadata $metadata
+     * @param string $formType
      * @param mixed $data
      * @param array $options
      *
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function createForm(CrudMetadataForm $configuration, $data, $options = array());
+    public function createForm(CrudMetadata $metadata, $formType, $data, $options = array());
 }
