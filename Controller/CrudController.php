@@ -118,22 +118,7 @@ class CrudController
             $submitAction = $this->submitActions->getSubmitAction($submitName);
 
             // Process the form
-            $response = $submitAction->submit($form, $request, $metadata);
-
-            // Submit action return a response. Return it.
-            if ($response instanceof Response) {
-                return $response;
-            }
-
-            // Else default behavior for this action
-            $request->getSession()->getFlashBag()->add(
-                'notice',
-                'New entity created!'
-            );
-
-            return new RedirectResponse(
-                $this->router->generateCrudUrl('update', $metadata, array('id' => $form->getData()->getId()))
-            );
+            return $submitAction->submit($form, $request, $metadata);
         }
 
         $createTemplate = $metadata->getTemplate('create');

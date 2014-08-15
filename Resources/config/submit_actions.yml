@@ -1,19 +1,11 @@
 parameters:
     jb_simple_crud.submit_action.default.class: Jb\Bundle\SimpleCrudBundle\Form\Submit\DefaultSubmitAction
-    jb_simple_crud.submit_action.create.class: Jb\Bundle\SimpleCrudBundle\Form\Submit\CreateSubmitAction
 
 services:
     jb_simple_crud.submit_action.default:
         class: %jb_simple_crud.submit_action.default.class%
         arguments:
             - @doctrine
-        tags:
-            -  { name: jb_simple_crud.submit_action, alias: default }
-
-    jb_simple_crud.submit_action.create:
-        class: %jb_simple_crud.submit_action.create.class%
-        parent: jb_simple_crud.submit_action.default
-        arguments:
             - @jb_simple_crud.router
         tags:
-            -  { name: jb_simple_crud.submit_action, alias: create }
+            -  { name: jb_simple_crud.submit_action, alias: default }

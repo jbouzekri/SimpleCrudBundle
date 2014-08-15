@@ -86,11 +86,11 @@ class CrudMetadata
     /**
      * Get form.create configuration
      *
-     * @return array
+     * @return \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm
      */
     public function getFormCreate()
     {
-        return $this->config['form']['create'];
+        return new CrudMetadataForm($this->config['form']['create']);
     }
 
     /**
@@ -100,12 +100,11 @@ class CrudMetadata
      */
     public function getFormEdit()
     {
-        $fields = $this->config['form']['edit'];
-        if (count($fields) == 0) {
-            $fields = $this->getFormCreate();
+        if (count($this->config['form']['edit']['fields']) === 0) {
+            return $this->getFormCreate();
         }
 
-        return $fields;
+        return new CrudMetadataForm($this->config['form']['edit']);
     }
 
     /**

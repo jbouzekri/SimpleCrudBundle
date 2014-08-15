@@ -3,6 +3,7 @@
 namespace Jb\Bundle\SimpleCrudBundle\Form\Factory;
 
 use Symfony\Component\Form\FormFactoryInterface as SfFormFactoryInterface;
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm;
 
 /**
  * CrudFormFactory
@@ -29,25 +30,28 @@ class CrudFormFactory implements FormFactoryInterface
     /**
      * Create a form
      *
-     * @param array $configuration
+     * @param \Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm $configuration
      * @param mixed $data
      * @param array $options
      *
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function createForm(array $configuration, $data, $options = array())
+    public function createForm(CrudMetadataForm $configuration, $data, $options = array())
     {
-        if (isset($configuration['type'])) {
-            return $this->formFactory->create($configuration['type'], $data, $options);
+        $fields = $configuration->getFields();
+        if (isset($fields['type'])) {
+            return $this->formFactory->create($fields['type'], $data, $options);
         }
 
         $formBuilder = $this->formFactory->createBuilder('form', $data, $options);
-        foreach ($configuration as $field) {
+        foreach ($fields as $field) {
             $formBuilder->add($field);
         }
 
-        // Add default submit button
-        $formBuilder->add('submit', 'submit');
+        // Add submit button or back link
+        foreach ($configuration->getActions() as $name => $action) {
+            $formBuilder->add($name, $action['type']);
+        }
 
         return $formBuilder->getForm();
     }

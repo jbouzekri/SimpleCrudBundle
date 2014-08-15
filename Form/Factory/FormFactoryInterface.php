@@ -2,6 +2,8 @@
 
 namespace Jb\Bundle\SimpleCrudBundle\Form\Factory;
 
+use Jb\Bundle\SimpleCrudBundle\Config\CrudMetadataForm;
+
 /**
  *
  * @author jobou
@@ -17,5 +19,5 @@ interface FormFactoryInterface
      *
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function createForm(array $configuration, $data, $options = array());
+    public function createForm(CrudMetadataForm $configuration, $data, $options = array());
 }

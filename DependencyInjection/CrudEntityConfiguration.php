@@ -5,6 +5,7 @@ namespace Jb\Bundle\SimpleCrudBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 
 /**
  * CrudEntityConfiguration configuration structure.
@@ -148,30 +149,9 @@ class CrudEntityConfiguration implements ConfigurationInterface
         $node
             ->addDefaultsIfNotSet()
             ->children()
-                ->arrayNode('create')
-                    ->beforeNormalization()
-                    ->ifString()
-                        ->then(function ($value) {
-                            return array('type' => $value);
-                        })
-                    ->end()
-                    ->prototype('scalar')
-                    ->end()
-                    ->defaultValue(array())
-                ->end()
-                ->arrayNode('edit')
-                    ->beforeNormalization()
-                    ->ifString()
-                        ->then(function ($value) {
-                            return array('type' => $value);
-                        })
-                    ->end()
-                    ->prototype('scalar')
-                    ->end()
-                    ->defaultValue(array())
-                ->end()
-            ->end()
-        ;
+                ->append($this->addFormArray('create'))
+                ->append($this->addFormArray('edit'))
+            ->end();
 
         return $node;
     }
@@ -249,5 +229,49 @@ class CrudEntityConfiguration implements ConfigurationInterface
                     ->scalarNode('label')->isRequired()->end()
                 ->end()
             ->end();
+    }
+
+    /**
+     * Add form array to a nodebuilder
+     *
+     * @param string $type
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    protected function addFormArray($type)
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root($type);
+
+        $node
+            ->children()
+                ->arrayNode('fields')
+                    ->beforeNormalization()
+                    ->ifString()
+                        ->then(function ($value) {
+                            return array('type' => $value);
+                        })
+                    ->end()
+                    ->prototype('scalar')
+                    ->end()
+                    ->defaultValue(array())
+                ->end()
+                ->arrayNode('actions')
+                    ->prototype('array')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('type')->isRequired()->end()
+                            ->scalarNode('label')->end()
+                        ->end()
+                    ->end()
+                    ->defaultValue(array(
+                        'default' => array(
+                            'type' => 'submit'
+                        )
+                    ))
+                ->end()
+            ->end();
+
+        return $node;
     }
 }
